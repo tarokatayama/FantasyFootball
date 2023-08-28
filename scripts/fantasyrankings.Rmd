@@ -1,0 +1,67 @@
+---
+title: "fantasyfootball"
+author: "Taro Katayama"
+date: "2023-08-27"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+
+rankings<-read.csv("Data/FantasyPros.csv", header = TRUE)
+underdog<-read.csv("Data/Underdog.csv", skip = 1, header = TRUE)
+espn<- read.csv("Data/espn.csv", header = FALSE)
+
+colnames(espn)<- c("Player", "ADP.ESPN")
+
+overall<-rankings%>%
+  select(1:2, 9)%>%
+  slice(1:200)
+
+overall.underdog<- underdog%>%
+  select(1, 4, 7)%>%
+  slice(1:200)
+
+ultimate<- inner_join(overall, overall.underdog)
+
+ultimate2<- inner_join(ultimate, espn)
+
+colnames(ultimate)<- c("Rank", "Player", "ADP", "ADP.Underdog", "Rank.Underdog")
+
+colnames(ultimate2)<- c("Rank", "Player", "ADP", "ADP.Underdog", "Rank.Underdog", "ADP.ESPN")
+
+
+ADP<- ultimate%>%
+  select(2:4)%>%
+  mutate(Difference= ADP-ADP.Underdog)
+
+value<-ultimate2%>%
+  select(2,3,4,6)%>%
+  mutate(value.underdog=ADP.ESPN-ADP.Underdog)%>%
+  mutate(value.Pro=ADP.ESPN-ADP)
+
+write.csv(value, file = "Data/value.csv")
+
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
