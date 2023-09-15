@@ -1,0 +1,98 @@
+---
+title: "week2fantasyfootball"
+author: "Taro Katayama"
+date: "2023-09-13"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+```{r setup, include=FALSE}
+install.packages("ggimage")
+library(tidyverse)
+library(stringdist)
+library(ggimage)
+
+bettingdataset<- read.csv("Data/odds.csv", header = TRUE)
+plays<- read.csv("Data/playspergame.csv", header = TRUE)
+
+```
+
+```{r}
+teams<- bettingdataset%>%
+  select(2,4)
+  
+
+teams<- data.frame(teams=unlist(teams, use.names = FALSE))
+
+teams[30,1]<- "Patriots"
+
+projectedpoints<- bettingdataset%>%
+  select(8,9)
+
+
+projectedpoints<- data.frame(projectedpoints=unlist(projectedpoints, use.names = FALSE))
+
+projectedtotalpoints<-cbind(teams, projectedpoints)
+```
+
+```{r}
+plays<- plays%>%
+  select(2,3)
+
+plays<-plays%>%rename(expectedplays = X2023, teams= Team)
+
+week2dataset<-full_join(projectedtotalpoints, plays,by= "teams")
+
+path = "/Users/tarokatayama/Desktop/fantasy_football/Data/logos/"
+
+Eagles <- paste0(path,"eagles.png")
+Bengals<- paste0(path,"bengals.png")
+Buccaneers<- paste0(path, "bucs.png")
+Packers<- paste0(path, "packers.png")
+Colts<- paste0(path, "colts.png")
+Chiefs<- paste0(path, "chiefs.png")
+Chargers<- paste0(path, "chargers.png")
+Bills<- paste0(path, "bills.png")
+Lions<- paste0(path, "lions.png")
+"49ers"<- paste0(path, "49ers.png")
+Giants<- paste0(path, "giants.png")
+Cowboys<- paste0(path, "cowboys.png")
+Broncos<- paste0(path, "broncos.png")
+Dolphins<- paste0(path, "dolphins.png")
+Saints<- paste0(path, "saints.png")
+Browns<- paste0(path, "browns.png")
+Vikings<- paste0(path, "vikings.png")
+Ravens<- paste0(path, "ravens.png")
+Bears<- paste0(path, "bears.png")
+Falcons<- paste0(path, "falcons.png")
+Texans<- paste0(path, "texans.png")
+Jaguars<- paste0(path, "jaguars.png")
+Titans<- paste0(path, "titans.png")
+Raiders<- paste0(path, "raiders.png")
+Seahawks<- paste0(path, "seahawks.png")
+Rams<- paste0(path, "rams.png")
+Cardinals<- paste0(path, "cardinals.png")
+Jets<- paste0(path, "jets.png")
+Commanders<- paste0(path, "commanders.png")
+Patriots<- paste0(path, "patriots.png")
+Panthers<- paste0(path, "panthers.png")
+Steelers<- paste0(path, "steelers.png")
+
+images<- c(Eagles, Bengals, Buccaneers, Packers, Colts, Chiefs, Chargers, Bills, Lions, "/Users/tarokatayama/Desktop/fantasy_football/Data/logos/49ers.png", Giants, Cowboys, Broncos, Dolphins, Saints, Browns, Vikings, Ravens, Bears, Falcons, Texans, Jaguars, Titans, Raiders, Seahawks, Rams, Cardinals, Jets, Commanders, Patriots, Panthers, Steelers )
+
+df<- data.frame(week2dataset, images)
+```
+
+```{r}
+
+ggplot(df, aes(x=projectedpoints, y=expectedplays))+ 
+  geom_image(aes(image=images), size=0.08)+
+  scale_x_continuous(breaks = seq(15, 30, by = 5))+
+  ggtitle("Projected Points & Expected Number of Plays for Each NFL Team: Week 2", subtitle = "*Expected Number of Points According to Vegas Odds")+
+  theme(axis.text = element_text(size = 12))+
+  xlab("Expected Total Points")+ ylab("Expected Number of Plays")+ theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5))
+
+```
+

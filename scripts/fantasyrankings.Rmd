@@ -12,6 +12,8 @@ editor_options:
 library(tidyverse)
 library(stringdist)
 
+bettingdataset<- read.csv("Data/odds.csv", header = TRUE)
+plays<- read.csv("Data/playspergame.csv", header = TRUE)
 
 
 rankings<-read.csv("Data/FantasyPros.csv", header = TRUE)
@@ -86,3 +88,31 @@ value<-ultimate2%>%
 write.csv(value, file = "Data/value.csv")
 
 ```
+
+```{r}
+teams<- bettingdataset%>%
+  select(2,4)
+
+teams<- data.frame(teams=unlist(teams, use.names = FALSE))
+
+projectedpoints<- bettingdataset%>%
+  select(8,9)
+
+projectedpoints<- data.frame(projectedpoints=unlist(projectedpoints, use.names = FALSE))
+
+projectedtotalpoints<-cbind(teams, projectedpoints)
+
+projectedtotalpoints<- projectedtotalpoints[order(projectedtotalpoints$teams), ]
+
+plays<- plays%>%
+  select(2,3)
+
+plays<-plays%>%rename(expectedplays = X2023, teams= Team)
+
+plays <- plays[order(plays$Team), ]
+
+
+
+week2dataset<-full_join(projectedtotalpoints, plays,by= "teams")
+```
+
